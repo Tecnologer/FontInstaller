@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:FontInstaller"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <ResourceDictionary Source="Styles.xaml"/>
+        <ResourceDictionary Source="/Resources/Styles.xaml"/>
     </Application.Resources>
 </Application>

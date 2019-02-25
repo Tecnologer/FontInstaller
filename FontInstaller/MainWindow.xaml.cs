@@ -1,20 +1,10 @@
 ﻿using FontInstaller.Core;
+using FontInstaller.Dialogs;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FontInstaller
 {
@@ -25,8 +15,9 @@ namespace FontInstaller
     {
         private State currentState;
         private readonly FontCore fontCore;
+        private readonly Regex reIsZip = new Regex(@".*(\.zip|\.rar|\.tar)$");
         public event PropertyChangedEventHandler PropertyChanged;
-
+        BackgroundWorker worker;
         public MainWindow()
         {
             InitializeComponent();
@@ -75,8 +66,8 @@ namespace FontInstaller
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
             {
                 FileName = "Archivo Comprimido", // Default file name
-                DefaultExt = ".zip, .rar, .tar, .7z", // Default file extension
-                Filter = "Archivo Comprimido|*.zip;*.rar;*.tar;*.7z" // Filter files by extension
+                DefaultExt = ".zip, .rar, .tar", // Default file extension
+                Filter = "Archivo Comprimido|*.zip;*.rar;*.tar;" // Filter files by extension
             };
 
             // Show open file dialog box
@@ -93,10 +84,10 @@ namespace FontInstaller
         private void InstallCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CurrentState = State.Processing;
-            var worker = new BackgroundWorker()
+            worker = new BackgroundWorker()
             {
                 WorkerReportsProgress = true,
-                WorkerSupportsCancellation = true
+                WorkerSupportsCancellation = true,
             };
             worker.DoWork += InstallAsync;
             worker.RunWorkerCompleted += InstallCompleted;
@@ -122,6 +113,19 @@ namespace FontInstaller
                     case InstalationState.SearchFont:
                         progresLabel = "Buscando fuentes";
                         break;
+                    case InstalationState.PasswordRequired:
+                        var dialog = new DialogPassword()
+                        {
+                            Owner = this
+                        };
+
+                        if(dialog.ShowDialog() == true)
+                        {
+                            fontCore.ZipPassword = dialog.PasswordInput.Password.ToString();
+                            
+                        }
+                        fontCore.IsPasswordSetted = true;
+                        break;
                 }
             }
             Dispatcher.BeginInvoke((Action)delegate
@@ -135,16 +139,40 @@ namespace FontInstaller
         private void InstallCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             CurrentState = State.Normal;
+            
+            var tuple = e.Result as WorkerResult;
+
+            if (tuple!=null && tuple.HasError)
+            {
+                MessageBox.Show(this, tuple.Msg,
+                                          "Error",
+                                          MessageBoxButton.OK,
+                                          MessageBoxImage.Error);
+                return;
+            }
+
+            MessageBox.Show(this, string.Format("Se instalaron {0} de {1} fuentes", progressBar.Value, progressBar.Maximum),
+                                         "Finalizado",
+                                         MessageBoxButton.OK,
+                                         MessageBoxImage.Information);
         }
 
         private void InstallAsync(object sender, DoWorkEventArgs e)
         {
             var source = e.Argument as string;
-            fontCore.InstallFonts(source, sender as BackgroundWorker);
+            if (!IsZip(source))
+            {
+                fontCore.InstallFontsFromFolder(source, sender as BackgroundWorker);
+            }
+            else
+            {
+                fontCore.InstallFontsFromZip(source, sender as BackgroundWorker, e);
+            }
         }
 
         private void CancelCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            worker.CancelAsync();
             CurrentState = State.Normal;
         }
 
@@ -164,6 +192,26 @@ namespace FontInstaller
         {
             TxtSourcePath.Text = "";
             TxtSourcePath.Focus();
+        }
+
+        private bool IsZip(string path)
+        {
+            return reIsZip.IsMatch(path);
+        }
+
+        private void OpenSettingCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void OpenSettingCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dialog = new ExtensionSetting()
+            {
+                Owner = this,
+            };
+
+            dialog.ShowDialog();
         }
     }
 

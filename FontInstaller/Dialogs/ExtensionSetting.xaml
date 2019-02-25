@@ -1,0 +1,96 @@
+﻿<Window x:Class="FontInstaller.Dialogs.ExtensionSetting"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Title="Configuracion de extensiones" Height="450" Width="300">
+    <Window.Resources>
+        <RoutedUICommand x:Key="AddExtCommand" Text="Add extension to list"/>
+        <RoutedUICommand x:Key="SaveCommand" Text="Close window and save changes"/>
+        <RoutedUICommand x:Key="CloseCommand" Text="Close window"/>
+
+        <!--<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>-->
+    </Window.Resources>
+    
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource AddExtCommand}" Executed="AddExtCommand_Execute" CanExecute="AddExtCommand_CanExecute"/>
+        <CommandBinding Command="{StaticResource SaveCommand}" Executed="SaveCommand_Execute" CanExecute="SaveCommand_CanExecute"/>
+        <CommandBinding Command="{StaticResource CloseCommand}" Executed="CloseCommand_Execute" CanExecute="SaveCommand_CanExecute"/>
+    </Window.CommandBindings>
+
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="60*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Extension:" VerticalAlignment="Center"/>
+            <TextBox Name="NewExt" Grid.Column="1" Margin="5" FontSize="14">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{StaticResource AddExtCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+            <Button Grid.Column="2" Content="Agregar" FontSize="12"  Margin="10 0" Padding="8" ToolTip="Agregar extension a la  lista" Command="{StaticResource AddExtCommand}"/>
+        </Grid>
+
+        <ListView Name="ListViewExtensions" Grid.Row="1" Margin="0 5">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Visible" Width="60">
+                        <GridViewColumn.CellTemplate>
+                            <ItemContainerTemplate>
+                                <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}"/>
+                            </ItemContainerTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Extension" Width="140" DisplayMemberBinding="{Binding Ext}" />
+                    <GridViewColumn Header="Eliminar" Width="60" >
+                        <GridViewColumn.CellTemplate>
+                            <ItemContainerTemplate>
+                                <Button Content="Borrar" Foreground="Red" Click="Button_Click">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsRemovable}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </ItemContainerTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Cancelar" FontSize="12"  Margin="10 0" Padding="8" ToolTip="Cerrar sin guardar" Command="{StaticResource CloseCommand}"/>
+            <Button Content="Guardar" FontSize="12"  Margin="10 0" Padding="8" ToolTip="Cerrar y guardar" Command="{StaticResource SaveCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>
