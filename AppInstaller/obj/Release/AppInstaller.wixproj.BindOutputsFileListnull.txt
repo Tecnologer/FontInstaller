@@ -1,0 +1,3 @@
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Release\cab1.cab
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Release\AppInstaller.msi
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Release\AppInstaller.wixpdb

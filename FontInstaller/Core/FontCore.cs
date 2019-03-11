@@ -12,19 +12,18 @@ namespace FontInstaller.Core
 {
     public class FontCore
     {
-        [DllImport("gdi32", EntryPoint = "AddFontResource")]
-        public static extern int AddFontResourceA(string lpFileName);
-        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        private static extern int AddFontResource(string lpszFilename);
-        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        private static extern int CreateScalableFontResource(uint fdwHidden, string
-        lpszFontRes, string lpszFontFile, string lpszCurrentPath);
-
         public bool IsPasswordSetted
         {
             set
             {
                 sevenZip.IsPasswordSetted = value;
+            }
+        }
+        public bool CancelDecryption
+        {
+            set
+            {
+                sevenZip.CancelDecryption = value;
             }
         }
         public string ZipPassword
@@ -37,33 +36,25 @@ namespace FontInstaller.Core
 
         private CSevenZip sevenZip = new CSevenZip();
 
-        /// <summary>
-        /// Installs font on the user's system and adds it to the registry so it's available on the next session
-        /// Your font must be included in your project with its build path set to 'Content' and its Copy property
-        /// set to 'Copy Always'
-        /// </summary>
-        /// <param name="contentFontName">Your font to be passed as a resource (i.e. "myfont.tff")</param>
-        private void RegisterFont(string fontSource)
+        internal static void RegiterFont(string fontPath)
         {
-            var contentFontName = Path.GetFileName(fontSource);
-            var pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), contentFontName);
+            string fontName = Path.GetFileNameWithoutExtension(fontPath);
+            string cmd = string.Format("copy /Y \"{0}\" \"%WINDIR%\\Fonts\" ", fontPath);
+            ExecuteCommand(cmd);
 
-            if (File.Exists(pathDest))
+            System.IO.FileInfo FInfo = new System.IO.FileInfo(fontPath);
+            cmd = string.Format("reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\" /v \"{0}\" /t REG_SZ /d {1} /f", fontName, FInfo.Name);
+            ExecuteCommand(cmd);
+        }
+
+        public static void ExecuteCommand(string command)
+        {
+            System.Diagnostics.ProcessStartInfo Info = new System.Diagnostics.ProcessStartInfo("cmd.exe")
             {
-                return;
-            }
-            // Retrieves font name
-            // Makes sure you reference System.Drawing
-            File.Copy(fontSource, pathDest);
-            PrivateFontCollection fontCol = new PrivateFontCollection();
-            fontCol.AddFontFile(pathDest);
-            var actualFontName = fontCol.Families[0].Name;
-
-            //Add font
-            AddFontResource(pathDest);
-            //Add registry entry   
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts",actualFontName, contentFontName, RegistryValueKind.String);
-
+                Arguments = string.Format("/c {0}", command),
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+            };
+            System.Diagnostics.Process.Start(Info);
         }
 
         public void InstallFontsFromFolder(string source, BackgroundWorker worker)
@@ -85,7 +76,7 @@ namespace FontInstaller.Core
                     return;
                 }
 
-                RegisterFont(file);
+                RegiterFont(file);
 
                 progress.Current = current++;
                 worker.ReportProgress(0, progress);

@@ -1,0 +1,7 @@
+obj\Release\Product.wixobj
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Release\cab1.cab
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Release\AppInstaller.msi
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Release\AppInstaller.wixpdb
+obj\Release\AppInstaller.wixproj.BindContentsFileListnull.txt
+obj\Release\AppInstaller.wixproj.BindOutputsFileListnull.txt
+obj\Release\AppInstaller.wixproj.BindBuiltOutputsFileListnull.txt

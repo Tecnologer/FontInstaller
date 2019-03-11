@@ -21,5 +21,15 @@ namespace FontInstaller.Dialogs
         {
             DialogResult = true;
         }
+
+        private void CloseCommand_CanExecuted(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CloseCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            DialogResult = false;
+        }
     }
 }

@@ -1,0 +1,2 @@
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Debug\AppInstaller.msi
+C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Debug\AppInstaller.wixpdb

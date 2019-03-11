@@ -1,5 +1,6 @@
 ﻿using FontInstaller.Core;
 using FontInstaller.Dialogs;
+using Syroot.Windows.IO;
 using System;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -13,9 +14,9 @@ namespace FontInstaller
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private string lastFolderSelected;
         private State currentState;
-        private readonly FontCore fontCore;
-        private readonly Regex reIsZip = new Regex(@".*(\.zip|\.rar|\.tar)$");
+        private readonly FontCore fontCore;        
         public event PropertyChangedEventHandler PropertyChanged;
         BackgroundWorker worker;
         public MainWindow()
@@ -23,6 +24,10 @@ namespace FontInstaller
             InitializeComponent();
             fontCore = new FontCore();
             DataContext = this;
+
+#if DEBUG
+            TxtSourcePath.Text = @"D:\Download\Download.rar";
+#endif
         }
         public State CurrentState
         {
@@ -122,9 +127,12 @@ namespace FontInstaller
                         if(dialog.ShowDialog() == true)
                         {
                             fontCore.ZipPassword = dialog.PasswordInput.Password.ToString();
-                            
+                            fontCore.IsPasswordSetted = true;
                         }
-                        fontCore.IsPasswordSetted = true;
+                        else
+                        {
+                            fontCore.CancelDecryption = true;
+                        }
                         break;
                 }
             }
@@ -160,7 +168,7 @@ namespace FontInstaller
         private void InstallAsync(object sender, DoWorkEventArgs e)
         {
             var source = e.Argument as string;
-            if (!IsZip(source))
+            if (!Compressed.IsCompressedFile(source))
             {
                 fontCore.InstallFontsFromFolder(source, sender as BackgroundWorker);
             }
@@ -180,11 +188,18 @@ namespace FontInstaller
         {
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
+                if (string.IsNullOrEmpty(lastFolderSelected))
+                {
+                    lastFolderSelected = (new KnownFolder(KnownFolderType.Downloads)).Path;
+                }
+
+                dialog.SelectedPath = lastFolderSelected;
                 System.Windows.Forms.DialogResult result = dialog.ShowDialog();
 
                 if (result != System.Windows.Forms.DialogResult.OK) return;
 
                 TxtSourcePath.Text = dialog.SelectedPath;
+                lastFolderSelected = dialog.SelectedPath;
             }
         }
 
@@ -192,11 +207,6 @@ namespace FontInstaller
         {
             TxtSourcePath.Text = "";
             TxtSourcePath.Focus();
-        }
-
-        private bool IsZip(string path)
-        {
-            return reIsZip.IsMatch(path);
         }
 
         private void OpenSettingCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)

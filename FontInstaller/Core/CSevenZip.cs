@@ -17,6 +17,7 @@ namespace FontInstaller.Core
 
         public string ZipPassword { get; set; }
         public bool IsPasswordSetted { get; set; }
+        public bool CancelDecryption { get; set; }
 
         private BackgroundWorker worker;
 
@@ -71,7 +72,7 @@ namespace FontInstaller.Core
             if (hasPassword)
             {
                 ValidatePassword(zipPath);
-                if (worker.CancellationPending)
+                if (worker.CancellationPending || CancelDecryption)
                 {
                     return (extr, new WorkerResult(true, "Extraccion cancelada por el usuario"));
                 }
@@ -93,7 +94,7 @@ namespace FontInstaller.Core
         {
             var success = false;
 
-            while (!success)
+            while (!success && !CancelDecryption)
             {
                 RequestPassword();
                 if (worker.CancellationPending)
@@ -105,11 +106,14 @@ namespace FontInstaller.Core
                 {
                     using (SevenZipExtractor extr = new SevenZipExtractor(zipPath, ZipPassword))
                     {
+                        System.Diagnostics.Debug.WriteLine(extr.Format);
+                        System.Diagnostics.Debug.WriteLine(extr.Password);
                         success = extr.ArchiveFileNames.Count > 0;
                     }
                 }
-                catch
+                catch(Exception e)
                 {
+                    System.Diagnostics.Debug.WriteLine(e);
                     IsPasswordSetted = false;
                     ZipPassword = null;
                 }
@@ -120,9 +124,12 @@ namespace FontInstaller.Core
         {
             try
             {
-                using (SevenZipExtractor extr = new SevenZipExtractor(zipPath))
-                {                    
-                    return extr.ArchiveFileNames.Count == -2;
+                using (Stream stream = File.OpenRead(zipPath))
+                {
+                    using (SevenZipExtractor extr = new SevenZipExtractor(stream))
+                    {
+                        return extr.PackedSize > 0;
+                    }
                 }
             }
             catch (Exception e)
@@ -136,7 +143,7 @@ namespace FontInstaller.Core
             var progress = new ReportProgress() { State = InstalationState.PasswordRequired };
             worker.ReportProgress(0, progress);
 
-            while (!IsPasswordSetted)
+            while (!IsPasswordSetted && !CancelDecryption)
             {
                 if (worker.CancellationPending)
                 {
