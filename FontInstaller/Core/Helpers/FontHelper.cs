@@ -6,7 +6,7 @@ using System.IO;
 using System.Windows;
 using System.Xml.Linq;
 
-namespace FontInstaller.Core
+namespace FontInstaller.Core.Helpers
 {
     public class FontHelper
     {
@@ -54,7 +54,11 @@ namespace FontInstaller.Core
 
                 return exts;
             }
-            catch { return null; }
+            catch (Exception e)
+            {
+                Logger.Log("Error when try retrieve list of supported extensions", e);
+                return null;
+            }
         }
 
         public ObservableCollection<FontExtension> GetExtSettingList()
@@ -83,7 +87,11 @@ namespace FontInstaller.Core
                 }
                 return list;
             }
-            catch { return null; }
+            catch (Exception e)
+            {
+                Logger.Log("Error when try retrieve settings", e);
+                return null;
+            }
         }
 
         public bool UpdateDoc(IEnumerable<FontExtension> fontExtensions)
@@ -111,6 +119,7 @@ namespace FontInstaller.Core
             }
             catch(Exception e)
             {
+                Logger.Log("Error when try save settings", e);
                 return false;
             }
         }

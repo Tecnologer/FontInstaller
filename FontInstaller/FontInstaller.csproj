@@ -102,7 +102,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\FontCore.cs" />
-    <Compile Include="Core\FontHelper.cs" />
+    <Compile Include="Core\Helpers\FontHelper.cs" />
     <Compile Include="Dialogs\ExtensionSetting.xaml.cs">
       <DependentUpon>ExtensionSetting.xaml</DependentUpon>
     </Compile>

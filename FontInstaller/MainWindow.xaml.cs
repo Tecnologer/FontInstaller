@@ -1,9 +1,9 @@
 ﻿using FontInstaller.Core;
+using FontInstaller.Core.Helpers;
 using FontInstaller.Dialogs;
 using Syroot.Windows.IO;
 using System;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
@@ -21,6 +21,7 @@ namespace FontInstaller
         BackgroundWorker worker;
         public MainWindow()
         {
+            Logger.Log("Application stated", Environment.OSVersion);
             InitializeComponent();
             fontCore = new FontCore();
             DataContext = this;
@@ -88,6 +89,10 @@ namespace FontInstaller
 
         private void InstallCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            fontCore.CancelDecryption = false;
+            fontCore.IsPasswordSetted = false;
+            fontCore.ZipPassword = null;
+
             CurrentState = State.Processing;
             worker = new BackgroundWorker()
             {

@@ -1,4 +1,4 @@
-﻿using FontInstaller.Core;
+﻿using FontInstaller.Core.Helpers;
 using System.Collections.ObjectModel;
 using System.Media;
 using System.Windows;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace FontInstaller.Core
 {
@@ -27,44 +22,44 @@ namespace FontInstaller.Core
             var fileType = GetZipType(filePath);
             switch (fileType)
             {
-                case ZipType.Rar:
+                case InArchiveFormat.Rar:
                     break;
-                case ZipType.Tar:
+                case InArchiveFormat.Tar:
                     break;
-                case ZipType.SevenZ:
+                case InArchiveFormat.SevenZip:
                     break;
-                case ZipType.Zip:
+                case InArchiveFormat.Zip:
                 default:
                     break;
             }
         }
 
-        public static ZipType GetZipType(string filePath)
+        public static InArchiveFormat GetZipType(string filePath)
         {
             if (reIsZip.IsMatch(filePath))
             {
-                return ZipType.Zip;
+                return InArchiveFormat.Zip;
             }
 
             if (reIsRar.IsMatch(filePath))
             {
-                return ZipType.Rar;
+                return InArchiveFormat.Rar;
             }
 
             if (reIsTar.IsMatch(filePath))
             {
-                return ZipType.Tar;
+                return InArchiveFormat.Tar;
             }
 
-            return ZipType.SevenZ;
+            return InArchiveFormat.SevenZip;
         }
     }
 
-    public enum ZipType
+    public enum InArchiveFormat
     {
         Zip,
         Rar,
         Tar,
-        SevenZ
+        SevenZip
     }
 }

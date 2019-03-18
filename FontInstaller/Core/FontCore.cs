@@ -1,11 +1,8 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using FontInstaller.Core.Data;
+using FontInstaller.Core.Helpers;
 using System.ComponentModel;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace FontInstaller.Core
@@ -16,25 +13,28 @@ namespace FontInstaller.Core
         {
             set
             {
-                sevenZip.IsPasswordSetted = value;
+                if (compressedFile == null) return;
+                compressedFile.IsPasswordSetted = value;
             }
         }
         public bool CancelDecryption
         {
             set
             {
-                sevenZip.CancelDecryption = value;
+                if (compressedFile == null) return;
+                compressedFile.CancelDecryption = value;
             }
         }
         public string ZipPassword
         {
             set
             {
-                sevenZip.ZipPassword = value;
+                if (compressedFile == null) return;
+                compressedFile.Password = value;
             }
         }
 
-        private CSevenZip sevenZip = new CSevenZip();
+        private CompressedFile compressedFile;
 
         internal static void RegiterFont(string fontPath)
         {
@@ -88,12 +88,25 @@ namespace FontInstaller.Core
             string outFolder = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(path));
             try
             {
-                //var extractState = ExtractZipFile(path, outFolder, worker);
-                var extractState = sevenZip.ExtractArchive(path, outFolder, worker);
-                if (extractState.HasError)
+                switch (Compressed.GetZipType(path))
                 {
-                    workerEvents.Result = extractState;
-                    return;
+                    case InArchiveFormat.Zip:
+                        compressedFile = new ZipFile(path, outFolder, worker, workerEvents);
+                        var result = (compressedFile as ZipFile).ExtractAll();
+                        if (result.State == CompressedStates.Error)
+                        {
+                            workerEvents.Cancel = true;
+                            return;
+                        }
+                        break;
+                    case InArchiveFormat.Rar:
+                        break;
+                    case InArchiveFormat.Tar:
+                        break;
+                    case InArchiveFormat.SevenZip:
+                        break;
+                    default:
+                        break;
                 }
 
                 InstallFontsFromFolder(outFolder, worker);
