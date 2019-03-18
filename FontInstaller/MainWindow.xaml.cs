@@ -72,8 +72,8 @@ namespace FontInstaller
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
             {
                 FileName = "Archivo Comprimido", // Default file name
-                DefaultExt = ".zip, .rar, .tar", // Default file extension
-                Filter = "Archivo Comprimido|*.zip;*.rar;*.tar;" // Filter files by extension
+                DefaultExt = ".zip", // Default file extension
+                Filter = "Archivo Comprimido|*.zip;" // Filter files by extension
             };
 
             // Show open file dialog box
