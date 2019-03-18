@@ -5,13 +5,13 @@ Programa para automatizar la instalacion de fuentes
 
 # TODO
 
-[x] Soportar lectura recursiva de folders
-[x] Soportar .ZIP
-[ ] Soportar .RAR
-[ ] Soportar .TAR
-[ ] Soportar .7z
-[ ] Mejorar mensajes
-[x] Crear instalador
+- [x] Soportar lectura recursiva de folders
+- [x] Soportar .ZIP
+- [ ] Soportar .RAR
+- [ ] Soportar .TAR
+- [ ] Soportar .7z
+- [ ] Mejorar mensajes
+- [x] Crear instalador
 
 # Instalador
 
