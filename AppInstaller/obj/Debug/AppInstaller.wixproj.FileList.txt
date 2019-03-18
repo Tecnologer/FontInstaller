@@ -1,6 +1,0 @@
-C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Debug\AppInstaller.msi
-C:\Users\Tecnologer\source\repos\FontInstaller\AppInstaller\bin\Debug\AppInstaller.wixpdb
-obj\Debug\Product.wixobj
-obj\Debug\AppInstaller.wixproj.BindContentsFileListnull.txt
-obj\Debug\AppInstaller.wixproj.BindOutputsFileListnull.txt
-obj\Debug\AppInstaller.wixproj.BindBuiltOutputsFileListnull.txt

@@ -1,1 +1,0 @@
-..\FontInstaller\bin\Release\FontInstaller.exe
