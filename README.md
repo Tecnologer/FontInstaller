@@ -15,7 +15,7 @@ Programa para automatizar la instalacion de fuentes
 
 # Instalador
 
-Version actual: [0.0.1.002][1]
+Version actual: [0.0.1.0002][1]
 
 
-[1]: https://github.com/Tecnologer/FontInstaller/raw/master/Installers/FontInstaller_0.0.1.002.msi
+[1]: https://github.com/Tecnologer/FontInstaller/raw/master/Installers/FontInstaller_0.0.1.0002.msi
