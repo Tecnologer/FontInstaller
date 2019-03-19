@@ -14,6 +14,7 @@ namespace FontInstaller
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private readonly string _version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         private string lastFolderSelected;
         private State currentState;
         private readonly FontCore fontCore;        
@@ -26,6 +27,7 @@ namespace FontInstaller
             fontCore = new FontCore();
             DataContext = this;
 
+            Title = string.Format("{0} ({1})", Title, _version);
 #if DEBUG
             TxtSourcePath.Text = @"D:\Download\Download.rar";
 #endif
