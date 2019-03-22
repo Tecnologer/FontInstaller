@@ -29,7 +29,7 @@ namespace FontInstaller
 
             Title = string.Format("{0} ({1})", Title, _version);
 #if DEBUG
-            TxtSourcePath.Text = @"D:\Download\Download.rar";
+            TxtSourcePath.Text = @"D:\Download\fonts.zip";
 #endif
         }
         public State CurrentState
@@ -156,20 +156,14 @@ namespace FontInstaller
             CurrentState = State.Normal;
             
             var tuple = e.Result as WorkerResult;
+            var header = tuple.HasError ? "Error" : "Proceso finalizado";
+            var typeBox = tuple.HasError ? MessageBoxImage.Error : MessageBoxImage.Information;
 
-            if (tuple!=null && tuple.HasError)
-            {
-                MessageBox.Show(this, tuple.Msg,
-                                          "Error",
-                                          MessageBoxButton.OK,
-                                          MessageBoxImage.Error);
-                return;
-            }
-
-            MessageBox.Show(this, string.Format("Se instalaron {0} de {1} fuentes", progressBar.Value, progressBar.Maximum),
-                                         "Finalizado",
-                                         MessageBoxButton.OK,
-                                         MessageBoxImage.Information);
+            MessageBox.Show(this, tuple.Msg,
+                                        header,
+                                        MessageBoxButton.OK,
+                                        typeBox);
+            
         }
 
         private void InstallAsync(object sender, DoWorkEventArgs e)
@@ -177,7 +171,7 @@ namespace FontInstaller
             var source = e.Argument as string;
             if (!Compressed.IsCompressedFile(source))
             {
-                fontCore.InstallFontsFromFolder(source, sender as BackgroundWorker);
+                fontCore.InstallFontsFromFolder(source, sender as BackgroundWorker, e);
             }
             else
             {

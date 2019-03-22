@@ -1,5 +1,6 @@
 ﻿using FontInstaller.Core.Data;
 using FontInstaller.Core.Helpers;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace FontInstaller.Core
 
         private CompressedFile compressedFile;
 
-        internal static void RegiterFont(string fontPath)
+        internal static void RegisterFont(string fontPath)
         {
             string fontName = Path.GetFileNameWithoutExtension(fontPath);
             string cmd = string.Format("copy /Y \"{0}\" \"%WINDIR%\\Fonts\" ", fontPath);
@@ -57,29 +58,46 @@ namespace FontInstaller.Core
             System.Diagnostics.Process.Start(Info);
         }
 
-        public void InstallFontsFromFolder(string source, BackgroundWorker worker)
+        public void InstallFontsFromFolder(string source, BackgroundWorker worker, DoWorkEventArgs workerEvents)
         {
-            var progress = new ReportProgress();
-            worker.ReportProgress(0, progress);
-
-            var extensions = FontHelper.Instance.GetExtensionsFonts().ToList();
-            string[] files = Directory.GetFiles(source, "*.*", SearchOption.AllDirectories)
-                                .Where(f => extensions.IndexOf(Path.GetExtension(f)) >= 0).ToArray();
-
-            int current = 0;
-            progress.Total = files.Length;
-            progress.State = InstalationState.Installing;
-            foreach (var file in files)
+            try
             {
-                if (worker.CancellationPending)
-                {
-                    return;
-                }
-
-                RegiterFont(file);
-
-                progress.Current = current++;
+                var progress = new ReportProgress();
                 worker.ReportProgress(0, progress);
+
+                var extensions = FontHelper.Instance.GetExtensionsFonts().ToList();
+                string[] files = Directory.GetFiles(source, "*.*", SearchOption.AllDirectories)
+                                    .Where(f => extensions.IndexOf(Path.GetExtension(f)) >= 0).ToArray();
+
+                int current =0, installed = 0;
+                progress.Total = files.Length;
+                progress.State = InstalationState.Installing;
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        if (worker.CancellationPending)
+                        {
+                            return;
+                        }
+
+                        RegisterFont(file);
+
+                        installed++;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log("Installing font", file, e);
+                    }
+
+                    progress.Current = current++;
+                    worker.ReportProgress(0, progress);
+                }
+                workerEvents.Result = new WorkerResult(false, string.Format("Se han instalado {0} de {1} fuentes.", installed,  files.Length));
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Installing fonts from folder", source, e);
             }
         }
 
@@ -109,7 +127,7 @@ namespace FontInstaller.Core
                         break;
                 }
 
-                InstallFontsFromFolder(outFolder, worker);
+                InstallFontsFromFolder(outFolder, worker, workerEvents);
             }
             finally
             {

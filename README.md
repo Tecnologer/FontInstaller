@@ -10,12 +10,12 @@ Programa para automatizar la instalacion de fuentes
 - [ ] Soportar .RAR
 - [ ] Soportar .TAR
 - [ ] Soportar .7z
-- [ ] Mejorar mensajes
+- [x] Mejorar mensajes
 - [x] Crear instalador
 
 # Instalador
 
-Version actual: [0.0.1.002][1]
+Version actual: [0.0.1.003][1]
 
 
-[1]: https://github.com/Tecnologer/FontInstaller/raw/master/Installers/FontInstaller_0.0.1.002.msi
+[1]: https://github.com/Tecnologer/FontInstaller/raw/master/Installers/FontInstaller_0.0.1.003.msi
