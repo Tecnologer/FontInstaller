@@ -85,6 +85,7 @@
       <DependentUpon>DialogPassword.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources\Constants.cs" />
+    <Compile Include="SingleInstance.cs" />
     <Page Include="Dialogs\DialogPassword.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
